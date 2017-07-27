@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=640, user-scalable=no">
+  <title>Web-Ftp | By 摘星fy</title>
+  <link rel="shortcut icon" type="image/x-icon" href="http://codding.cn/ftp-favicon.ico">
+  <!-- build:ftp-bootstrap-css -->
+  <link rel="stylesheet" href="./static/boot/css/bootstrap.css">
+  <!-- endbuild -->
+  <!-- build:web-ftp-css -->
+  <link rel="stylesheet" href="static/css/webFtp.css">
+  <!-- endbuild -->
+</head>
+<body style="display: none;">
+
+<div id="web-ftp">
+  <div class="dir-list">
+    <section 
+      v-for="(dirItem, dirIdx) in dirList"
+      :class="['dir', {cur: dirIdx === curDirIndex}]"
+      :key="'dir-'+ dirItem.uid"
+      :dir-index="''+dirIdx"
+      :style="dirItem.css"
+    >
+      <div class="gray-title">
+        <div class="fr">
+          <span>{{getFiles(dirItem).length}}</span>
+          <i class="glyphicon glyphicon-pencil" onclick="$(this).closest('.gray-title').find('.form-control').focus()"></i>
+          <i class="glyphicon glyphicon-remove" @click="dirList.splice(dirIdx, 1)"></i>
+        </div>
+        <div class="path-box">
+          <input type="text" class="form-control"
+            :value="dirItem.path"
+            @keydown.stop.enter="updateDirPath($event,dirItem)"
+          >
+        </div>
+      </div>
+      <div class="auto-scroll">
+        <div style="margin: 10px; overflow: hidden;" class="alert alert-danger" 
+          v-if="getUrlReport(curApp).code || getFiles(dirItem).code"
+        >{{getUrlReport(curApp).msg || getFiles(dirItem).msg}}</div>
+        <ul class="file-list" v-else>
+          <li class="file"
+            v-for="(file, idx) in getFiles(dirItem)"
+            :key="curApp.url + '-' + curApp.secretKey + '-' + idx + '-' + file.name "
+            :filename="file.name"
+            :filetype="file.type"
+            :basename="file.basename"
+            :file-index="idx"
+            :is-dir="file.isDir"
+            :title="'名称：'+file.name+(file.isDir ? '' : '\n日期：'+file._mtime)"
+          >
+            <i
+              :class="['glyphicon', 'glyphicon-' + (file.isDir ? 'folder-close' : (mapType[file.type] || 'file'))]"
+              draggable="true"
+            ></i>
+            <div class="file-name"
+              draggable="true"
+            >{{file.name}}</div>
+          </li>
+        </ul>
+      </div>
+      <div class="resize">
+        <div class="line">
+          <div class="l"></div>
+          <div class="t"></div>
+          <div class="r"></div>
+          <div class="b"></div>
+        </div>
+        <div class="corner">
+          <div class="lt"></div>
+          <div class="rt"></div>
+          <div class="rb"></div>
+          <div class="lb"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="select-rect" style="display: none;"></div>
+
+  <div id="menu" :style="{zIndex: zIndex + 1}">
+    <ul>
+      <li 
+        v-for="(command, idx) in menu.list" 
+        v-if="command"
+        :command="command"
+        @click="exec($event,command)"
+      >{{command}}</li>
+    </ul>
+  </div>
+
+  <!-- 控制按钮 -->
+  <ctrl-btn></ctrl-btn>
+
+  <!-- 新建文件夹 -->
+  <transition name="fade">
+    <modal-new-dir 
+      v-if="router.newDir.isDisplay"
+    ></modal-new-dir>
+  </transition>
+
+  <!-- 打开文件夹 -->
+  <transition name="fade">
+    <modal-open-dir 
+      v-if="router.open.isDisplay"
+    ></modal-open-dir>
+  </transition>
+
+  <!-- 配置面板 -->
+  <transition name="fade">
+    <modal-config 
+      v-if="router.config.isDisplay"
+    ></modal-config>
+  </transition>
+
+  <!-- 弹出层 -->
+  <transition name="fade">
+    <panel-alert 
+      v-if="alert.isDisplay"
+    ></panel-alert>
+  </transition>
+
+  <!-- upload -->
+  <transition name="fade">
+    <upload v-if="upload.isUploading || upload.errReport.length > 0"></upload>
+  </transition>
+
+  <!-- loading -->
+  <transition name="fade">
+    <loading 
+      v-show="is.loading"
+    ></loading>
+  </transition>
+
+  <!-- <div id="cmd" style="position: fixed; right: 20px; top: 20px; z-index: 1000; max-width: 50%;">
+    <pre>{{router}}</pre>
+  </div> -->
+</div>
+
+<script>
+  function bug(msg) {
+    console.log(msg)
+  }
+</script>
+
+<!-- build:ftp-cdn-js -->
+<script src="./static/crypto/crypto-js.js"></script>
+<script src="./static/crypto/hmac-sha256.js"></script>
+<script src="./static/js/jq.js"></script>
+<script src="./static/js/vue.js"></script>
+<!-- endbuild -->
+
+<!-- build:ftp-js -->
+<script src="static/js/frag.es6.js"></script>
+<script src="static/js/components.es6.js"></script>
+<script src="static/js/webFtp.es6.js"></script>
+<!-- endbuild -->
+
+</body>
+</html>

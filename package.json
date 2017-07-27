@@ -1,0 +1,33 @@
+{
+  "name": "web-ftp",
+  "version": "1.0.0",
+  "description": "Powerful web-ftp",
+  "main": "gulpfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kingAnyWHere/web-ftp.git"
+  },
+  "keywords": [
+    "try",
+    "it"
+  ],
+  "author": "zhaixing",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kingAnyWHere/web-ftp/issues"
+  },
+  "homepage": "https://github.com/kingAnyWHere/web-ftp#readme",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-clean-css": "^3.7.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-ftp": "^1.1.0",
+    "gulp-html-replace": "^1.6.2",
+    "gulp-htmlmin": "^3.0.0",
+    "gulp-uglify-es": "^0.1.3"
+  },
+  "dependencies": {}
+}
