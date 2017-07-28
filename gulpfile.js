@@ -33,7 +33,7 @@ gulp.task('ftp-copy-index', function() {
       },
     }))
     .pipe(htmlmin({collapseWhitespace: true}))
-    .pipe(gulp.dest('./dist/'))
+    .pipe(gulp.dest('./dist/ftp.html'))
 })
 
 gulp.task('copy-php', function() {
