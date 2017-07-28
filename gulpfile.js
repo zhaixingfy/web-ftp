@@ -5,7 +5,7 @@ var cleanCSS = require('gulp-clean-css')
 var htmlmin = require('gulp-htmlmin')
 var uglify = require('gulp-uglify-es').default
 var gutil = require('gulp-util')
-var ftp = require('gulp-ftp')
+var rename = require('gulp-rename')
 
 // web-ftp 首页资源路径替换
 gulp.task('ftp-copy-index', function() {
@@ -33,7 +33,8 @@ gulp.task('ftp-copy-index', function() {
       },
     }))
     .pipe(htmlmin({collapseWhitespace: true}))
-    .pipe(gulp.dest('./dist/ftp.html'))
+    .pipe(rename('ftp.html'))
+    .pipe(gulp.dest('./dist/'))
 })
 
 gulp.task('copy-php', function() {
