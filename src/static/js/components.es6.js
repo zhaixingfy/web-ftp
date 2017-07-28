@@ -263,6 +263,7 @@ Vue.component('modal-config', {
 })
 
 Vue.component('free-view', {
+  // <i class="glyphicon glyphicon-trash" @click="removeOnePic"></i>
   template: `
     <div class="free-view"
       :style="{zIndex: $root.zIndex + 10}"
@@ -270,7 +271,6 @@ Vue.component('free-view', {
       <div class="topbar">
         <div class="fr">
           <i class="glyphicon glyphicon-repeat" @click="setRotate"></i>
-          <i class="glyphicon glyphicon-trash" @click="removeOnePic"></i>
           <i class="glyphicon glyphicon-download-alt" @click="downloadPic"></i>
           <i class="glyphicon glyphicon-remove" @click="closeFreeView"></i>
         </div>

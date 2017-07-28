@@ -129,9 +129,13 @@ function createZip($pathArr, $zipPath) {
 
 // 单文件下载
 function fileDownload($pathDir, $filename) {
+  function anotherWay() {
+    echo file_get_contents($_filename) or die(err(2, '文件读取失败'));
+    exit;
+  }
   $filepath = $pathDir.'/'.$filename;
   $_filepath = iconv('UTF-8', 'GBK', $filepath);
-  $file = fopen($_filepath, "r") or die(err(2, '文件读取失败'));
+  $file = fopen($_filepath, "r") or die(anotherWay());
   $filesize = filesize($_filepath);
   $buff = 1024 * 1024;
 
