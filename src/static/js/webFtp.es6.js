@@ -5,6 +5,10 @@
   QQ: 273259755
 */
 ;(function($) {
+  Vue.config.silent = true
+  // 务必在加载 Vue 之后，立即同步设置以下内容
+  Vue.config.devtools = true
+  
   let curDir = $()
   let draggableEl = $()
   let oldFileEl = $()
@@ -25,45 +29,43 @@
         zIndex: 0,
         debounce: 0,
         router: { // 路由
-          "config": {
-            "isDisplay": false,
-            "curAppIndex": 0,
-            "appList": [{
-              "url": "http://localhost/web-ftp/src/php/webFtp.php",
-              "eye": false,
-              "curDirIndex": 0,
-              "secretKey": "",
-              "dirList": [{
-                "path": "c:/phpStudy/www",
-                "sortBy": "0",
-                "uid": "11y3msd5azo",
-                "css": {
-                  "left": "100px",
-                  "top": "100px",
-                  "width": "400px",
-                  "height": "400px",
-                  "zIndex": 1
-                }
-              }]
+          config: {
+            isDisplay: false,
+            curAppIndex: 0,
+            appList: [{
+              url: 'http://localhost/web-ftp/src/php/webFtp.php',
+              eye: false,
+              curDirIndex: 0,
+              secretKey: '',
+              dirList: []
             }]
           },
-          "newDir": {
-            "isDisplay": false,
-            "name": ""
+          newDir: {
+            isDisplay: false,
+            name: ''
           },
-          "rename": {
-            "isDisplay": false,
-            "name": ""
-          },
-          "open": {
-            "isDisplay": false,
-            "path": ""
+          open: {
+            isDisplay: false,
+            path: ''
           }
+        },
+        rename: {
+          isDisplay: false,
+          name: ''
         },
         is: { // 布尔类型
           mac: navigator.userAgent.indexOf('Mac OS') > -1,
           isUploadDirSupport: 'webkitdirectory' in folderInput,
           loading: false,
+        },
+        freeView: {
+          isDisplay: true,
+          left: 0,
+          top: 0,
+          scale: 1,
+          rotate: 0,
+          curIndex: 0,
+          imgList: []
         },
         alert: {
           isDisplay: false,
@@ -97,9 +99,10 @@
           'tiff': 'picture',
           'gif': 'picture',
           'jpeg': 'picture',
+          'jpg': 'picture',
           'svg': 'picture',
           'png': 'picture',
-          'c': 'text-height',
+          /*'c': 'text-height',
           'cpp': 'text-height',
           'lua': 'text-height',
           'html': 'text-height',
@@ -112,7 +115,7 @@
           'net': 'text-height',
           'py': 'text-height',
           'swift': 'text-height',
-          'php': 'text-height',
+          'php': 'text-height',*/
           'rm': 'film',
           'rmvb': 'film',
           'wmv': 'film',
@@ -132,6 +135,8 @@
           'module': 'music',
           'midi': 'music',
           'vqf': 'music',
+          /*'zip': 'tasks',
+          'rar': 'tasks',*/
         }
       }
     },
@@ -183,6 +188,16 @@
           }, vm.debounce || 10)
           vm.debounce = 0
         }
+      },
+      'rename.isDisplay': function(newVal) {
+        if (newVal) {
+          vm.$nextTick(() => {
+            $('.modal:visible .form-control:eq(0)').each((i, node) => {
+              node.focus()
+              node.select()
+            })
+          })
+        }
       }
     },
     methods: { // 初始化路由
@@ -203,20 +218,17 @@
         r.newDir = r.newDir || {}
         r.newDir.isDisplay = r.newDir.isDisplay || false
         r.newDir.name = r.newDir.name || ''
-        r.rename = r.rename || {}
-        r.rename.isDisplay = r.rename.isDisplay || false
-        r.rename.name = r.rename.name || ''
         r.open = r.open || {}
         r.open.isDisplay = r.open.isDisplay || false
         r.open.path = r.open.path || ''
 
         if (r.config.appList.length === 0) {
           r.config.appList.push({
-            url: 'http://localhost/web-ftp/src/php/webFtp.php',
+            url: 'http://codding.cn/webFtp.php',
             eye: false,
             curDirIndex: 0,
             secretKey: '',
-            dirList: [{
+            dirList: [/*{
               path: 'c:/phpStudy/www',
               sortBy: '0',
               uid: g.createUid(),
@@ -227,7 +239,7 @@
                 height: '400px',
                 zIndex: 1,
               }
-            }],
+            }*/],
           })
         }
 
@@ -242,7 +254,6 @@
         if (
           r.config.isDisplay ||
           r.open.isDisplay ||
-          r.rename.isDisplay ||
           r.newDir.isDisplay
         ) {
           setTimeout(() => {
@@ -290,6 +301,43 @@
         vm.upload.errReport = []
         binaryFiles = []
       },
+      submitRename(e) { // 提交重命名
+        const vm = this
+        const lis = curDir.find('.file[draggable=true]')
+        const count = {
+          dir: 0,
+          file: 0,
+        }
+        const data = {
+          a: '重命名',
+          secretVal: vm.getUrlReport(vm.curApp).secretVal,
+          pathFrom: vm.dir.path,
+          pathTo: vm.dir.path,
+          from: [],
+          to: [],
+        }
+        const basename = vm.rename.name.replace(/\.[^.]*$/, '')
+        lis.each((idx, node) => {
+          const filenameOrigin = node.getAttribute('filename')
+          const filetypeOrigin = node.getAttribute('filetype')
+          const basenameOrigin = node.getAttribute('basename')
+          const isDir = node.getAttribute('is-dir') === 'true'
+          data.from.push(filenameOrigin)
+          if (node === oldFileEl[0]) {
+            data.to.push(vm.rename.name)
+          } else {
+            data.to.push(basename + '(' + (isDir ? ++count.dir : ++count.file) + ')' + (filetypeOrigin ? '.' + filetypeOrigin : ''))
+          }
+        })
+        data.from = JSON.stringify(data.from)
+        data.to = JSON.stringify(data.to)
+        $.post(vm.curApp.url, data, (data) => {
+          vm.path2File = {}
+          vm.openAllDir()
+          vm.rename.name = ''
+          vm.rename.isDisplay = false
+        })
+      },
       async fileUpload(fnEnd) { // 文件上传
         const report = vm.getUrlReport(vm.curApp)
         vm.upload = { // 上传信息
@@ -329,7 +377,6 @@
             xhr.open('POST', vm.curApp.url, true)
             xhr.upload.onprogress = (e) => {
               vm.upload.msg = binaryFiles.length + '个文件等待中， 正在上传 ' + oFile.name + ' / '
-              vm.upload.msg = '正在上传 ' + oFile.name + ' / ' + binaryFiles.length + '个文件等待中'
               vm.upload.sizeUploading = e.loaded
             }
             xhr.onload = xhr.onerror = (e) => {
@@ -433,9 +480,16 @@
             }, (data) => {
               if (!data.code) {
                 data.sort((a, b) => {
-                  return a.isDir === b.isDir ?
-                    a.name.localeCompare(b.name) :
-                    b.isDir.toString().localeCompare(a.isDir.toString())
+                  if (a.isDir === b.isDir) {
+                    return a.name.localeCompare(b.name)
+                  } else {
+                    return b.isDir.toString().localeCompare(a.isDir.toString())
+                  }
+                })
+                data.forEach((item, idx) => {
+                  item._mtime = new Date(item.mtime * 1000).date()
+                  item.type = !item.isDir && item.name.indexOf('.') > -1 ? 
+                    item.name.substring(item.name.lastIndexOf('.') + 1).toLowerCase() : ''
                 })
               }
               succ(data)
@@ -465,16 +519,31 @@
           case '打开':
             {
               const _dirList = []
-              curDir.find('.file[draggable=true]').each((idx, el) => {
-                const isDir = el.getAttribute('is-dir') === 'true'
+              const files = vm.getFiles(vm.dir)
+              const has = {}
+              curDir.find('.file[draggable=true]').each((idx, node) => {
+                const isDir = node.getAttribute('is-dir') === 'true'
+                const index = node.getAttribute('file-index')
                 if (isDir) {
                   let dir = JSON.parse(JSON.stringify(vm.dir))
-                  dir.path += '/' + el.getAttribute('filename')
+                  dir.path += '/' + node.getAttribute('filename')
                   _dirList.push(dir)
                 } else {
-
+                  has.pic = has.pic || vm.mapType[node.getAttribute('filetype')]
                 }
               })
+              let li = $(e.target).closest('.file')
+              if (has.pic) {
+                let name = li.attr('filename')
+                files.forEach((v, i) => {
+                  if (vm.mapType[v.type] === 'picture') {
+                    vm.freeView.imgList.push(v)
+                  }
+                  if (v.name === name) {
+                    vm.freeView.curIndex = vm.freeView.imgList.length - 1
+                  }
+                })
+              }
               if (_dirList.length > 0) {
                 _dirList.forEach((dir, idx) => {
                   dir.uid = g.createUid()
@@ -571,7 +640,33 @@
             }
             break
           case '重命名':
-            
+            if (!$.contains(curDir[0], oldFileEl[0])) {
+              return
+            }
+            vm.rename.name = oldFileEl.attr('filename')
+            vm.rename.isDisplay = true
+            break
+          case '下载':
+            location = vm.curApp.url + '?' + g.json2URL({
+              a: '下载',
+              secretVal: report.secretVal,
+              pathDir: vm.dir.path,
+              filenames: JSON.stringify([curDir.find('.file[draggable]').eq(0).attr('filename')])
+            })
+            break
+          case '下载zip':
+            {
+              const filenames = []
+              curDir.find('.file[draggable=true]').each((idx, node) => {
+                filenames.push(node.getAttribute('filename'))
+              })
+              location = vm.curApp.url + '?' + g.json2URL({
+                a: '打包下载',
+                secretVal: report.secretVal,
+                pathDir: vm.dir.path,
+                filenames: JSON.stringify(filenames)
+              })
+            }
             break
           case '上传文件':
             fileInput.click()
@@ -915,16 +1010,16 @@
           }
         }
       })
-    }).on('dblclick', '.file[is-dir=true]', function(e) {
+    }).on('dblclick', '.file', function(e) {
       e.preventDefault()
       vm.exec(e, '打开')
     }).on('contextmenu', '.file-list', function(e) {
       e.preventDefault()
       let x = e.clientX
       let y = e.clientY
-      const filesInDraggable = curDir.find('.file[draggable=true]')
+      const lis = curDir.find('.file[draggable=true]')
       if ($(e.target).attr('draggable') === 'true') {
-        vm.menu.list = ['打开', '复制', '剪切', '粘贴', '重命名', '删除']
+        vm.menu.list = ['打开', '复制', '剪切', '粘贴', '重命名', '删除', (lis.length === 1 && lis.attr('is-dir') !== 'true') ? '下载' : '下载zip']
       } else {
         vm.menu.list = ['新建文件夹', '上传文件', '上传文件夹', vm.clipboard.pathFrom ? '粘贴' : '']
       }
@@ -1097,7 +1192,8 @@
         vm.router.open.isDisplay = 
         vm.router.newDir.isDisplay = 
         vm.router.config.isDisplay = 
-        vm.router.rename.isDisplay = false
+        vm.rename.isDisplay = false
+        vm.freeView.imgList = []
       }
 
       curDir = dirListEl.children().eq(vm.curDirIndex)

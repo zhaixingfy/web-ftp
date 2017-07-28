@@ -10,6 +10,7 @@ table.align td {padding: 4px;}
 
 .fl {float: left;}
 .fr {float: right;}
+.vm {display: inline-block; height: 100%; vertical-align: middle;}
 .c {text-anchor: center;}
 .ellipsis {overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
 .glyphicon {cursor: pointer;}
@@ -121,6 +122,19 @@ table.align td {padding: 4px;}
 #loading .box .ball ul.h {animation: 4s loading-rotate-y linear infinite;}
 #loading .box .ball ul.v {animation: 4s loading-rotate-x linear infinite;}
 
+/* 图片浏览插件 */
+.free-view {width: 100%; height: 100%; position: fixed; left: 0; top: 0; background: rgba(0,0,0,.9); display: flex; flex-direction: column; color: #ddd;}
+.free-view .topbar {width: 100%; height: 50px; background: #111; position: relative; z-index: 2;}
+.free-view .topbar .fr {height: 100%; font-size: 1.5em;}
+.free-view .topbar .fr .glyphicon {border-left: 1px solid #444; padding: 0 1em; float: left; height: 49px; line-height: 49px;}
+.free-view .topbar .pathname {padding: 0 1em; line-height: 50px;}
+
+.free-view .img-view {width: 100%; position: absolute; top: 55px; bottom: 80px; text-align-last: center; vertical-align: middle; white-space: nowrap;}
+.free-view .img-view img  {flex: 1; max-width: 100%; max-height: 100%;}
+.free-view .thumb-list {height: 80px; overflow: hidden; width: 100%; height: 80px; position: absolute; left: 0; bottom: 0;}
+.free-view .thumb-list ul {white-space: nowrap; position: absolute; left: 50%; top: 5px; margin-left: -35px;}
+.free-view .thumb-list ul li {width: 70px; height: 70px; display: inline-block; margin-right: 5px; border: 1px solid #ccc; opacity: .5; background: #fff no-repeat center / cover;}
+.free-view .thumb-list ul li.on {opacity: 1;}
 
 /* 右键菜单 */
 #menu {min-width: 80px; position: fixed; left: 50px; top: 100px; z-index: 100; background: #fff; border-radius: 4px; box-shadow: 0 4px 15px rgba(0,0,0,.3); color: #555; white-space: nowrap; display: none;

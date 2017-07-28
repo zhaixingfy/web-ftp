@@ -36,4 +36,9 @@ gulp.task('ftp-copy-index', function() {
     .pipe(gulp.dest('./dist/'))
 })
 
-gulp.task('default', ['ftp-copy-index'])
+gulp.task('copy-php', function() {
+  gulp.src('./src/php/webFtp.php')
+    .pipe(gulp.dest('./dist'))
+})
+
+gulp.task('default', ['ftp-copy-index', 'copy-php'])

@@ -54,20 +54,19 @@ var g = {
   },
 }
 
-if (!Array.prototype.fill) {
-  Array.prototype.fill = function(val, _start, _end) {
-    _start = _start || 0
-    _end = _end || this.length - 1
-    _start = (_start % this.length + this.length) % this.length
-    _end = (_end % this.length + this.length) % this.length
-    const start = Math.max(_start, _end)
-    const end = Math.min(_start, _end)
-    for (let i = start; i <= end; i++) {
-      this[i] = val
-    }
-    return this
+
+!Array.prototype.fill && (Array.prototype.fill = function(val, _start, _end) {
+  _start = _start || 0
+  _end = _end || this.length - 1
+  _start = (_start % this.length + this.length) % this.length
+  _end = (_end % this.length + this.length) % this.length
+  const start = Math.max(_start, _end)
+  const end = Math.min(_start, _end)
+  for (let i = start; i <= end; i++) {
+    this[i] = val
   }
-}
+  return this
+})
 
 Number.prototype.fill0 = function(len) {
   let n = this.toString()
@@ -99,6 +98,17 @@ if (document.body.closest) {
     })
   }
 }
+
+$.fn.extend({
+  mousewheel(cb) {
+    this.on('onmousewheel' in document ? 'mousewheel' : 'DOMMouseScroll', (e) => {
+      const _e = e.originalEvent
+      const isDown = _e.wheelDelta < 0 || e.detail > 0
+      cb && cb.call(this, e, isDown)
+    })
+    return this
+  }
+})
 
 $(window).on('scroll', (e) => {
   $('#menu').hide()

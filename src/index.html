@@ -20,7 +20,7 @@
       v-for="(dirItem, dirIdx) in dirList"
       :class="['dir', {cur: dirIdx === curDirIndex}]"
       :key="'dir-'+ dirItem.uid"
-      :dir-index="''+dirIdx"
+      :dir-index="dirIdx"
       :style="dirItem.css"
     >
       <div class="gray-title">
@@ -93,6 +93,13 @@
   <!-- 控制按钮 -->
   <ctrl-btn></ctrl-btn>
 
+  <!-- 重命名 -->
+  <transition name="fade">
+    <modal-rename 
+      v-if="rename.isDisplay"
+    ></modal-rename>
+  </transition>
+
   <!-- 新建文件夹 -->
   <transition name="fade">
     <modal-new-dir 
@@ -105,6 +112,13 @@
     <modal-open-dir 
       v-if="router.open.isDisplay"
     ></modal-open-dir>
+  </transition>
+
+  <!-- free-view -->
+  <transition name="fade">
+    <free-view
+      v-if="freeView.imgList.length > 0"
+    ></free-view>
   </transition>
 
   <!-- 配置面板 -->

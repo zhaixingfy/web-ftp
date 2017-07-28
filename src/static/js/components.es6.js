@@ -20,6 +20,39 @@ Vue.component('ctrl-btn', {
   `
 })
 
+// 重命名
+Vue.component('modal-rename', {
+  template: `
+    <div class="modal fade in"
+      :style="{zIndex: $root.zIndex + 10}"
+      @click="$root.rename.isDisplay=false"
+    >
+      <form class="modal-dialog" 
+        @click.stop
+        @submit.prevent="$root.submitRename"
+      >
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">
+              <i class="glyphicon glyphicon-info-sign"></i>
+              <span>重命名</span>
+            </h4>
+          </div>
+          <div class="modal-body">
+            <input type="text" placeholder="输入文件名" class="form-control" 
+              v-model="$root.rename.name"
+              @input="$root.debounce=500;"
+            />
+          </div>
+          <div class="modal-footer">
+            <input type="submit" value="新建" class="btn btn-success btn-block" />
+          </div>
+        </div>
+      </form>
+    </div>
+  `
+})
+
 // 新建文件夹
 Vue.component('modal-new-dir', {
   template: `
@@ -75,37 +108,6 @@ Vue.component('modal-new-dir', {
       vm.router.newDir.isDisplay = false
     }
   }
-})
-
-// 重命名
-Vue.component('modal-rename', {
-  template: `
-    <div class="modal fade in"
-      :style="{zIndex: $root.zIndex + 10}"
-      @click="$root.router.newDir.isDisplay=false"
-    >
-      <form class="modal-dialog" 
-        @click.stop
-      >
-        <div class="modal-content">
-          <div class="modal-header">
-            <h4 class="modal-title">
-              <i class="glyphicon glyphicon-info-sign"></i>
-              <span>重命名</span>
-            </h4>
-          </div>
-          <div class="modal-body">
-            <input type="text" placeholder="输入名称" class="form-control" 
-              @input="$root.debounce=500;"
-            />
-          </div>
-          <div class="modal-footer">
-            <input type="submit" value="重命名" class="btn btn-success btn-block" />
-          </div>
-        </div>
-      </form>
-    </div>
-  `,
 })
 
 // modal-open-dir
@@ -260,6 +262,162 @@ Vue.component('modal-config', {
   `
 })
 
+Vue.component('free-view', {
+  template: `
+    <div class="free-view"
+      :style="{zIndex: $root.zIndex + 10}"
+    >
+      <div class="topbar">
+        <div class="fr">
+          <i class="glyphicon glyphicon-repeat" @click="setRotate"></i>
+          <i class="glyphicon glyphicon-trash" @click="removeOnePic"></i>
+          <i class="glyphicon glyphicon-download-alt" @click="downloadPic"></i>
+          <i class="glyphicon glyphicon-remove" @click="closeFreeView"></i>
+        </div>
+        <div class="pathname ellipsis">
+          <span>当前查看： {{$root.freeView.imgList[curIndex].name}}</span>
+        </div>
+      </div>
+      <div class="img-view">
+        <img class="big-img" alt="" 
+          :src="getSrc(curIndex)"
+          :style="{transform: 'translate('+$root.freeView.left+'px, '+$root.freeView.top+'px) scale('+$root.freeView.scale+') rotate('+(rotate*90)+'deg)'}"
+        /><div class="vm"></div>
+      </div>
+      <div class="thumb-list">
+        <ul>
+          <li
+            v-for="(item, idx) in $root.freeView.imgList"
+            :style="{backgroundImage: 'url('+getSrc(idx)+')', transform: 'translateX(-'+(curIndex * 75)+'px)'}"
+            :class="{on: idx === curIndex}"
+            @click="curIndex = idx"
+          ></li>
+        </ul>
+      </div>
+    </div>
+  `,
+  data() {
+    return {
+      timerTransition: 0
+    }
+  },
+  computed: {
+    curIndex: {
+      get() {
+        const f = this.$root.freeView
+        const i = f.curIndex
+        const l = f.imgList.length
+        f.left = 0
+        f.top = 0
+        f.rotate = 0
+        f.scale = 1
+        return (i % l + l) % l
+      },
+      set(newVal) {
+        this.$root.freeView.curIndex = newVal
+      }
+    },
+    rotate: {
+      get() {
+        return this.$root.freeView.rotate
+      },
+      set(newVal) {
+        this.$root.freeView.rotate++
+      }
+    }
+  },
+  methods: {
+    getSrc(idx) {
+      const vm = this
+      const root = this.$root
+      const f = root.freeView
+      const curApp = root.curApp
+      const dir = root.dir
+      const report = root.getUrlReport(curApp)
+      return curApp.url + '?' + g.json2URL({
+        a: '读取文件',
+        secretVal: report.secretVal,
+        fullPath: dir.path + '/' + f.imgList[idx].name
+      })
+      
+    },
+    setRotate() {
+      const vm = this
+      const bigImg = $(vm.$el).find('.big-img').css('transition', '.3s all')
+      vm.rotate++
+      clearTimeout(vm.timerTransition)
+      vm.timerTransition = setTimeout(() => {
+        bigImg.css('transition', 'none')
+      }, 350)
+    },
+    removeOnePic(e) {
+      const vm = this
+      const root = vm.$root
+      const f = root.freeView
+      const files = root.getFiles(root.dir)
+      const curIndex = vm.curIndex
+      const imgList = f.imgList
+      imgList.splice(curIndex, 1)
+      for (let i = 0, len = files.length; i < len; i++) {
+        if (files[i] === imgList[curIndex]) {
+          files.splice(i, 1)
+          return
+        }
+      }
+    },
+    downloadPic(e) {
+      const vm = this
+      const root = vm.$root
+      const f = root.freeView
+      const curApp = root.curApp
+      const report = root.getUrlReport(curApp)
+      location.href = curApp.url + '?' + g.json2URL({
+        a: '下载',
+        secretVal: report.secretVal,
+        pathDir: root.dir.path,
+        filenames: [f.imgList[vm.curIndex].name]
+      })
+    },
+    closeFreeView(e) {
+      this.$root.freeView.imgList = []
+    },
+  },
+  mounted() {
+    const vm = this
+    const root = vm.$root
+    const f = root.freeView
+    // f.imgList = f.imgList.splice(0, 5)
+    vm.$nextTick(() => {
+      $(this.$el).find('.big-img').on('mousedown', (e) => {
+        const x1 = e.clientX
+        const y1 = e.clientY
+        const originX = f.left
+        const originY = f.top
+
+        e.preventDefault()
+
+        document.onmousemove = (e) => {
+          const x2 = e.clientX
+          const y2 = e.clientY
+          f.left = x2 - x1 + originX
+          f.top = y2 - y1 + originY
+        }
+        document.onmouseup = (e) => {
+          document.onmousemove = document.onmouseup = null
+          const x3 = e.clientX
+          const y3 = e.clientY
+        }
+      }).mousewheel((e, isDown) => {
+        e.preventDefault()
+        isDown ? f.scale /= 1.2 : f.scale *= 1.2
+      }).end().find('.thumb-list').mousewheel((e, isDown) => {
+        e.preventDefault()
+        isDown ? vm.curIndex++ : vm.curIndex--
+      })
+    })
+  }
+})
+
 Vue.component('upload', {
   template: `
     <div class="modal fade in"
@@ -287,7 +445,7 @@ Vue.component('upload', {
             >
               <table id="table-upload-err-report">
                 <tr v-for="(item, idx) in $root.upload.errReport">
-                  <td class="ellipsis" style="max-width: 150px; vertical-align: top;">{{item.name}}：</td>
+                  <td class="ellipsis" style="width: 10px; max-width: 150px; vertical-align: top;">{{item.name}}：</td>
                   <td style="word-break: break-all;"><span class="text-danger">{{item.msg}}</span></td>
                 </tr>
               </table>
@@ -296,7 +454,7 @@ Vue.component('upload', {
           <div class="modal-footer">
             <div class="btn btn-warning btn-block" 
               @click="$root.blankBinaryFiles"
-            >取消</div>
+            >{{$root.upload.isUploading ? '取消' : '确定'}}</div>
           </div>
         </div>
       </div>
