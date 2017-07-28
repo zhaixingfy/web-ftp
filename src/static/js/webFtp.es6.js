@@ -475,7 +475,7 @@
           vm.path2File[key] = await new Promise((succ, err) => {
             $.post(vm.curApp.url, {
               a: '获取文件列表',
-              pathDir: dir.path,
+              pathDir: dir.path || '/',
               secretVal: report.secretVal
             }, (data) => {
               if (!data.code) {
