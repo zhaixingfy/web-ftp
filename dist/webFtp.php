@@ -3,6 +3,9 @@ error_reporting(0);
 header('Access-Control-Allow-Origin:*');
 header('Content-Type: text/html; Charset=utf-8');
 
+// 秘钥 = password
+$secretKey = '';
+
 // 向前端相应
 function res($data) {
   echo json_encode($data, JSON_UNESCAPED_UNICODE);
@@ -129,20 +132,16 @@ function createZip($pathArr, $zipPath) {
 
 // 单文件下载
 function fileDownload($pathDir, $filename) {
-  function anotherWay() {
-    echo file_get_contents($_filename) or die(err(2, '文件读取失败a'));
-    exit;
-  }
   $filepath = $pathDir.'/'.$filename;
   $_filepath = iconv('UTF-8', 'GBK', $filepath);
-  $file = fopen($_filepath, "r") or die(anotherWay());
+  $file = fopen($_filepath, "r");
   $filesize = filesize($_filepath);
   $buff = 1024 * 1024;
 
   header('Content-type: application/octet-stream');
   header('Accept-Ranges: bytes');
   header('Accept-Length: '.filesize($filesize));
-  header('Content-Disposition: attachment; filename='.$filename);
+  header('Content-Disposition: attachment; filename='.iconv('GBK', 'UTF-8', $filename));
 
   while ($filesize >= 0) {
     echo fread($file, $buff);
@@ -176,7 +175,6 @@ switch ($_REQUEST['a']) {
 }
 
 
-$secretKey = '';
 $secretVal = $_REQUEST['secretVal'];
 $pathDir = $_REQUEST['pathDir'];
 $_pathDir = iconv('UTF-8', 'GBK', $pathDir);
