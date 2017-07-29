@@ -60,7 +60,7 @@ Hold down the ctrl (command) key, box select = counter select multiple
 
 2. webFtp.php 为接口文件，放入本地或远程根目录
 
-3. 打开ftp.html，配置面板输入如：http://localhost/webFtp.php，秘钥默认为空，可在webFtp.php里面进行设置
+3. 打开ftp.html，秘钥默认为空，可在webFtp.php里面进行设置，配置面板输入如：http://localhost/webFtp.php
 
 4. 点击打开按钮，输入目录路径即可正常使用
 
