@@ -153,7 +153,7 @@ http://codding.cn/webFtp.php?a=downloadExec
   "a": "删除文件",
   "secretVal": "92492c6990320cea815bd43489c799e046e13ee061cf0bfcb65c214fdaa7401f",
   "pathDir": ".",
-  "filenames": "["a.jpg"]"
+  "filenames": "[\"a.jpg\"]"
 }
 ```
 
