@@ -130,7 +130,7 @@ function createZip($pathArr, $zipPath) {
 // 单文件下载
 function fileDownload($pathDir, $filename) {
   function anotherWay() {
-    echo file_get_contents($_filename) or die(err(2, '文件读取失败'));
+    echo file_get_contents($_filename) or die(err(2, '文件读取失败a'));
     exit;
   }
   $filepath = $pathDir.'/'.$filename;
@@ -171,7 +171,7 @@ switch ($_REQUEST['a']) {
     ]);
     break;
   case 'downloadExec':
-    fileDownload('', 'webFtp.php');
+    fileDownload('.', 'webFtp.php');
     exit;
 }
 

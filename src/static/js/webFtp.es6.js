@@ -425,6 +425,7 @@
             let {token} = await new Promise((succ, err) => {
               $.ajax({
                 url: appItem.url,
+                method: 'post',
                 dataType: 'json',
                 data: {
                   a: 'getToken',
@@ -651,7 +652,7 @@
               a: '下载',
               secretVal: report.secretVal,
               pathDir: vm.dir.path,
-              filenames: JSON.stringify([curDir.find('.file[draggable]').eq(0).attr('filename')])
+              filenames: JSON.stringify([curDir.find('.file[draggable=true]').eq(0).attr('filename')])
             })
             break
           case '下载zip':
