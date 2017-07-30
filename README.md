@@ -1,20 +1,27 @@
 [TOC]
 
-# Web-Ftp 简约的远程文件管理工具
+# Web-Ftp 简约的远程文件管理工具 Web-Ftp simple remote file management tool
 
 - 一款功能强悍的磁盘管理工具，支持局域网文件共享，支持跨域远程操作
+A powerful disk management tools to support LAN file sharing, support for cross domain remote operation
 
 - 有着与windows相似的文件快捷操作，轻松上手
+With windows similar file shortcuts, easy to use
 
 - 采用cdn，加快页面响应速度
+Using CDN to speed up page response
 
 - 项目压缩合并后，变身只有40多K的html文件，双击即可运行
+After the project compression merge, change only more than 40 K HTML file, double-click to run
 
 - 采用es6编写，使用最新html5 API 无缝配合现代浏览器
+Written using ES6, using the latest HTML5 API seamlessly cooperate with modern browsers
 
 - 单页面应用，不允许多浏览器同时使用
+Single page applications do not allow multiple browsers to use simultaneously
 
 - 目前仅支持php，后续将支持种后台编程语言
+Currently, only PHP is supported, and subsequent programming languages will be supported
 
 
 # 快捷操作 (Shortcut operation) 1
