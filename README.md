@@ -2,6 +2,10 @@
 
 # Web-Ftp 简约的远程文件管理工具 Web-Ftp simple remote file management tool
 
+** 项目演示地址 **
+
+http://codding.cn/ftp.html
+
 - 一款功能强悍的磁盘管理工具，支持局域网文件共享，支持跨域远程操作
 A powerful disk management tools to support LAN file sharing, support for cross domain remote operation
 
@@ -81,6 +85,12 @@ Hold down the ctrl (command) key, box select = counter select multiple
 
 **如果你也喜欢这个项目，可按照接口文档，编写自己的后台接口文件**
 
+
+## 获取客户端  Get client
+
+http://codding.cn/ftp.html
+
+ctrl (command) + s 保存到本地
 
 ## 获取接口文件 Get an interface file
 
